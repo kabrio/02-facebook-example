@@ -62,7 +62,7 @@
 
 (defn handle-message [messaging-event]
   (let [sender-id (get-in messaging-event [:sender :id])
-        replies (process-event messaging-event)]
+        replies (filter some? (process-event messaging-event))]
     (doseq [reply replies]
 
       ; If the reply does not conform to the spec, we throw with explanation
@@ -123,5 +123,3 @@
 
 (defn -main [& args]
   (jetty/run-jetty app {:port (read-string (or (env :port) "3000"))}))
-
-

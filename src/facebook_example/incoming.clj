@@ -37,6 +37,7 @@
       (string/includes? lower-case-message-text "help") (outgoing/help)
       (string/includes? lower-case-message-text "image") (outgoing/some-image)
       (string/includes? lower-case-message-text "bots") (outgoing/send-lemmings-bots)
+      (string/includes? lower-case-message-text "kg") (outgoing/evaluate message-text)
       ; If no rules apply echo the user's message-text input
       :else (outgoing/echo message-text))))
 

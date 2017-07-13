@@ -33,11 +33,36 @@
 (defn welcome [first-name]
   [{:action "typing_on"}
    {:delay 3000}
-   {:message (templates/text-message (str "Welcome " first-name " =)"))}
-   {:message (templates/image-message "https://upload.wikimedia.org/wikipedia/commons/e/ef/Tunturisopuli_Lemmus_Lemmus.jpg")}
-   {:delay 1000}
-   {:message (templates/button-template "Want to see the work of previous lemmings survivors?"
-                                        [(templates/postback-button "Show them to me!" "GET_LEMMINGS_BOTS")])}])
+   {:message (templates/text-message (str "Welcome to Fitbot, " first-name " =)"))}
+   ;{:message (templates/image-message "https://upload.wikimedia.org/wikipedia/commons/e/ef/Tunturisopuli_Lemmus_Lemmus.jpg")}
+   {:delay 500}
+   {:message (templates/text-message (str "If you want to calculate your fitness score, send us a message with your height (in cm) & weight (in kg). For example: 50kg 160cm "))}])
+                                        ;[(templates/postback-button "Show them to me!" "GET_LEMMINGS_BOTS")])}])
+
+(defn parse-int [s]
+  (Integer. (re-find  #"\d+" s)))
+
+(defn evaluate [message-text]
+  (let [messageSplit (clojure.string/split message-text #" ")
+        ;(def weight (subs (get myWords 0) 0 (- (count (get myWords 0)) 2)))
+        ;(def height (subs (get myWords 1) 0 (- (count (get myWords 1)) 2)))
+        weight (parse-int (get messageSplit 0))
+        height (/ (parse-int (get messageSplit 1)) 100)
+        bmi (double (/ weight (* height height)))
+        output (if (< bmi 25)
+                   (str "Your BMI is " (format "%.2f" bmi) ". Congratulations, you are very healthy. Please tell Happy Humans your address so we can send you your prize! (We totally do not plan to abduct you!)")
+                   (str "Your BMI is " (format "%.2f" bmi) ". Unfortunately you could be in better shape 🐷 \n You should change that! 🚴‍"))]
+    ;(def output (if (< bmi 25))
+      ;(def output (str "Your (healthy) BMI is " (format "%.2f" bmi))))
+    ;        (str "Your BMI is " (format "%.2f" bmi) ". Congratulations, you are very healthy. Please contact Happy Humans for your prize!")
+    ;        (str "Your BMI is " (format "%.2f" bmi))]
+
+        ;  output (str "Your BMI is: " (format "%.2f" (double bmi)) ". Congratulations, you are very healthy. Please contact Happy Humans for your prize!"))]
+        ;output (str "Your BMI is: " (format "%.2f" (double bmi)))]
+    [{:message (templates/text-message output)}
+     (if (< bmi 25){:message (templates/text-message "🎉")})]))
+
+    ; (if (< bmi 25) {:message (templates/image-message "MYURL.jpg")})]))
 
 (defn error []
   [{:message (templates/text-message "Sorry, I didn't get that! :(")}])
